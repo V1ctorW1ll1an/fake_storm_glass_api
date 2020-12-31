@@ -1,0 +1,8 @@
+{
+  "name": "fake_storm_glass_api",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:the-VW/fake_storm_glass_api.git",
+  "author": "Victor Willian de Sousa <victorwillian1012@gmail.com>",
+  "license": "MIT"
+}
