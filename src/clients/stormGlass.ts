@@ -4,12 +4,15 @@ import { StormGlassResponseError } from "./errors/stormGlassResponseError";
 import { IForecastPoint } from "./interfaces/IForecastPoint";
 import { IStormGlassForecastResponse } from "./interfaces/IStormGlassForecastResponse";
 import { IStormGlassPoint } from "./interfaces/IStormGlassPoint";
+import config, { IConfig } from "config";
 
 export class StormGlass {
   readonly stormglassAPIParams =
     "swellDirection,swellHeight,swellPeriod,waveDirection,waveHeight,windDirection, windSpeed";
 
   readonly stormGlassAPISource = "noaa";
+
+  stormGlassResourceConfig: IConfig = config.get("App.resources.StormGlass");
 
   constructor(protected request: AxiosStatic) {}
 
@@ -19,10 +22,10 @@ export class StormGlass {
   ): Promise<IForecastPoint[]> {
     try {
       const response = await this.request.get<IStormGlassForecastResponse>(
-        "https://api.stormglass.io/v2/weather/point?params=${this.stormGlassAPIParams}&source=${this.stormglassAPISource}&end=1592113802&lat=${lat}&lng=${lng}",
+        "${stormGlassResourceConfig.get('apiUrl')}/weather/point?params=${this.stormGlassAPIParams}&source=${this.stormglassAPISource}&end=1592113802&lat=${lat}&lng=${lng}",
         {
           headers: {
-            Authorization: "fake-token",
+            Authorization: this.stormGlassResourceConfig.get("apiToken"),
           },
         }
       );
