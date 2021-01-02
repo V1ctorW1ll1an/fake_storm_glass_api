@@ -1,4 +1,5 @@
 import { AxiosStatic } from "axios";
+import { ClientRequestError } from "./errors/clientRequestError";
 import { IForecastPoint } from "./interfaces/IForecastPoint";
 import { IStormGlassForecastResponse } from "./interfaces/IStormGlassForecastResponse";
 import { IStormGlassPoint } from "./interfaces/IStormGlassPoint";
@@ -15,16 +16,20 @@ export class StormGlass {
     lat: number,
     lng: number
   ): Promise<IForecastPoint[]> {
-    const response = await this.request.get<IStormGlassForecastResponse>(
-      "https://api.stormglass.io/v2/weather/point?params=${this.stormGlassAPIParams}&source=${this.stormglassAPISource}&end=1592113802&lat=${lat}&lng=${lng}",
-      {
-        headers: {
-          Authorization: "fake-token",
-        },
-      }
-    );
+    try {
+      const response = await this.request.get<IStormGlassForecastResponse>(
+        "https://api.stormglass.io/v2/weather/point?params=${this.stormGlassAPIParams}&source=${this.stormglassAPISource}&end=1592113802&lat=${lat}&lng=${lng}",
+        {
+          headers: {
+            Authorization: "fake-token",
+          },
+        }
+      );
 
-    return this.normalizeResponse(response.data);
+      return this.normalizeResponse(response.data);
+    } catch (err) {
+      throw new ClientRequestError(err.message);
+    }
   }
 
   private normalizeResponse(
