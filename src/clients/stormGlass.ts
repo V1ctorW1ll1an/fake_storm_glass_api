@@ -1,5 +1,6 @@
 import { AxiosStatic } from "axios";
 import { ClientRequestError } from "./errors/clientRequestError";
+import { StormGlassResponseError } from "./errors/stormGlassResponseError";
 import { IForecastPoint } from "./interfaces/IForecastPoint";
 import { IStormGlassForecastResponse } from "./interfaces/IStormGlassForecastResponse";
 import { IStormGlassPoint } from "./interfaces/IStormGlassPoint";
@@ -28,6 +29,13 @@ export class StormGlass {
 
       return this.normalizeResponse(response.data);
     } catch (err) {
+      if (err.response && err.response.status) {
+        throw new StormGlassResponseError(
+          `Error: ${JSON.stringify(err.response.data)} Code: ${
+            err.response.status
+          }`
+        );
+      }
       throw new ClientRequestError(err.message);
     }
   }
