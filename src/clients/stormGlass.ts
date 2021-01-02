@@ -1,10 +1,10 @@
-import { AxiosStatic } from "axios";
 import { ClientRequestError } from "./errors/clientRequestError";
 import { StormGlassResponseError } from "./errors/stormGlassResponseError";
 import { IForecastPoint } from "./interfaces/IForecastPoint";
 import { IStormGlassForecastResponse } from "./interfaces/IStormGlassForecastResponse";
 import { IStormGlassPoint } from "./interfaces/IStormGlassPoint";
 import config, { IConfig } from "config";
+import * as HTTPUtil from "@src/util/request";
 
 export class StormGlass {
   readonly stormglassAPIParams =
@@ -14,7 +14,7 @@ export class StormGlass {
 
   stormGlassResourceConfig: IConfig = config.get("App.resources.StormGlass");
 
-  constructor(protected request: AxiosStatic) {}
+  constructor(protected request = new HTTPUtil.Request()) {}
 
   public async fetchPoints(
     lat: number,
