@@ -1,4 +1,6 @@
+import { IForecastPoint } from "@src/clients/interfaces/IForecastPoint";
 import { StormGlass } from "@src/clients/stormGlass";
+import { ForecastProcessingInternalError } from "./errors/forecastProcessingInternalError";
 import { IBeach } from "./interfaces/IBeach";
 import { IBeachForecast } from "./interfaces/IBeachForecast";
 import { ITimeForecast } from "./interfaces/ITimeForecast";
@@ -9,27 +11,39 @@ export class Forecast {
   public async processForecastForBeaches(
     beaches: IBeach[]
   ): Promise<ITimeForecast[]> {
-    const pointsWithCorrectSources: IBeachForecast[] = [];
+    try {
+      const pointsWithCorrectSources: IBeachForecast[] = [];
 
-    for (const beach of beaches) {
-      const points = await this.stormGlass.fetchPoints(beach.lat, beach.lng);
-      const enrichedBeachData = points.map((e) => {
-        return {
-          ...{
-            lat: beach.lat,
-            lng: beach.lng,
-            name: beach.name,
-            position: beach.position,
-            rating: 1,
-          },
-          ...e,
-        };
-      });
+      for (const beach of beaches) {
+        const points = await this.stormGlass.fetchPoints(beach.lat, beach.lng);
 
-      pointsWithCorrectSources.push(...enrichedBeachData);
+        const enrichedBeachData = this.enrichedBeachData(points, beach);
+
+        pointsWithCorrectSources.push(...enrichedBeachData);
+      }
+
+      return this.mapForecastByTime(pointsWithCorrectSources);
+    } catch (error) {
+      throw new ForecastProcessingInternalError(error.message);
     }
+  }
 
-    return this.mapForecastByTime(pointsWithCorrectSources);
+  private enrichedBeachData(
+    points: IForecastPoint[],
+    beach: IBeach
+  ): IBeachForecast[] {
+    return points.map((e) => {
+      return {
+        ...{
+          lat: beach.lat,
+          lng: beach.lng,
+          name: beach.name,
+          position: beach.position,
+          rating: 1,
+        },
+        ...e,
+      };
+    });
   }
 
   private mapForecastByTime(forecast: IBeachForecast[]): ITimeForecast[] {
