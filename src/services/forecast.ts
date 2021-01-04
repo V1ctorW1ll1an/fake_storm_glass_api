@@ -1,13 +1,14 @@
 import { StormGlass } from "@src/clients/stormGlass";
 import { IBeach } from "./interfaces/IBeach";
 import { IBeachForecast } from "./interfaces/IBeachForecast";
+import { ITimeForecast } from "./interfaces/ITimeForecast";
 
 export class Forecast {
   constructor(protected stormGlass = new StormGlass()) {}
 
   public async processForecastForBeaches(
     beaches: IBeach[]
-  ): Promise<IBeachForecast[]> {
+  ): Promise<ITimeForecast[]> {
     const pointsWithCorrectSources: IBeachForecast[] = [];
 
     for (const beach of beaches) {
@@ -28,6 +29,25 @@ export class Forecast {
       pointsWithCorrectSources.push(...enrichedBeachData);
     }
 
-    return pointsWithCorrectSources;
+    return this.mapForecastByTime(pointsWithCorrectSources);
+  }
+
+  private mapForecastByTime(forecast: IBeachForecast[]): ITimeForecast[] {
+    const forecastByTime: ITimeForecast[] = [];
+
+    for (const point of forecast) {
+      const timePoint = forecastByTime.find((f) => f.time === point.time);
+
+      if (timePoint) {
+        timePoint.forecast.push(point);
+      } else {
+        forecastByTime.push({
+          time: point.time,
+          forecast: [point],
+        });
+      }
+    }
+
+    return forecastByTime;
   }
 }
