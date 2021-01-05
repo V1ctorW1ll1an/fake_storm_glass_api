@@ -11,47 +11,24 @@ export class Forecast {
   public async processForecastForBeaches(
     beaches: IBeach[]
   ): Promise<ITimeForecast[]> {
-    try {
-      const pointsWithCorrectSources: IBeachForecast[] = [];
+    const pointsWithCorrectSources: IBeachForecast[] = [];
 
+    try {
       for (const beach of beaches) {
         const points = await this.stormGlass.fetchPoints(beach.lat, beach.lng);
-
-        const enrichedBeachData = this.enrichedBeachData(points, beach);
-
+        const enrichedBeachData = this.enrichBeachData(points, beach);
         pointsWithCorrectSources.push(...enrichedBeachData);
       }
-
       return this.mapForecastByTime(pointsWithCorrectSources);
     } catch (error) {
       throw new ForecastProcessingInternalError(error.message);
     }
   }
 
-  private enrichedBeachData(
-    points: IForecastPoint[],
-    beach: IBeach
-  ): IBeachForecast[] {
-    return points.map((e) => {
-      return {
-        ...{
-          lat: beach.lat,
-          lng: beach.lng,
-          name: beach.name,
-          position: beach.position,
-          rating: 1,
-        },
-        ...e,
-      };
-    });
-  }
-
   private mapForecastByTime(forecast: IBeachForecast[]): ITimeForecast[] {
     const forecastByTime: ITimeForecast[] = [];
-
     for (const point of forecast) {
       const timePoint = forecastByTime.find((f) => f.time === point.time);
-
       if (timePoint) {
         timePoint.forecast.push(point);
       } else {
@@ -61,7 +38,23 @@ export class Forecast {
         });
       }
     }
-
     return forecastByTime;
+  }
+
+  private enrichBeachData(
+    points: IForecastPoint[],
+    beach: IBeach
+  ): IBeachForecast[] {
+    return points.map((e) => ({
+      ...{},
+      ...{
+        lat: beach.lat,
+        lng: beach.lng,
+        name: beach.name,
+        position: beach.position,
+        rating: 1,
+      },
+      ...e,
+    }));
   }
 }
