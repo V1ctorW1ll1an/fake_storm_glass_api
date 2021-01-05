@@ -1,4 +1,4 @@
-import { Beach } from "@src/models/beach";
+import { Beach } from "@src/model/beach";
 import { BeachPosition } from "@src/services/enums/beachPosition";
 import nock from "nock";
 import stormGlassWeather3HoursFixture from "../fixtures/stormGlass_weather_3_hours.json";

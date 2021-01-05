@@ -1,3 +1,11 @@
-import { log } from "console";
+import { SetupServer } from "./server";
+import config from "config";
+console.log("run");
 
-log("Hello world!");
+
+(async (): Promise<void> => {
+  const server = new SetupServer(config.get("App.port"));
+
+  await server.init();
+  server.start();
+})();
