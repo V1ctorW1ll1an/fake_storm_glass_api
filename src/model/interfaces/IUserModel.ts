@@ -1,0 +1,4 @@
+import { Document } from "mongoose";
+import { IUser } from "./IUser";
+
+export interface IUserModel extends Omit<IUser, "_id">, Document {}
