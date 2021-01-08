@@ -35,9 +35,11 @@
   },
   "dependencies": {
     "@overnightjs/core": "^1.7.5",
+    "@types/bcryptjs": "^2.4.2",
     "@types/config": "^0.0.37",
     "@types/node": "^14.14.17",
     "axios": "^0.21.1",
+    "bcryptjs": "^2.4.3",
     "config": "^3.3.3",
     "express": "^4.17.1",
     "module-alias": "^2.2.2",
