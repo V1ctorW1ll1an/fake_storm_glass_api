@@ -1,4 +1,4 @@
-import mongoose, { Model } from "mongoose";
+import mongoose, { Model, Schema } from "mongoose";
 import { IBeachModel } from "./interfaces/IBeachModel";
 
 const schema = new mongoose.Schema(
@@ -7,6 +7,7 @@ const schema = new mongoose.Schema(
     lng: { type: Number, required: true },
     name: { type: String, required: true },
     position: { type: String, required: true },
+    user: { type: Schema.Types.ObjectId, ref: "User", required: true },
   },
   {
     toJSON: {
